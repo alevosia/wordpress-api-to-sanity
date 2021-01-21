@@ -1,5 +1,5 @@
-exports.PAGE = 1;
-exports.PER_PAGE = 3;
+exports.PAGE = process.env.PAGE;
+exports.PER_PAGE = 100;
 
 // Sanity Development
 // exports.SANITY_REF_IDS = {
