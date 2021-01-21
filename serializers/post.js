@@ -1,6 +1,11 @@
 const parseBody = require("../utils/parse-body");
-const sanitizeHtml = require("../utils/sanitize-html");
-const { SANITY_REF_IDS, WP_CATEGORY_IDS } = require("../config");
+const removeHTML = require("../utils/remove-html");
+const capitalizeSection = require("../utils/capitalize-section");
+const {
+  SANITY_REF_IDS,
+  WP_CATEGORY_IDS,
+  OPINYON_AUTHORS,
+} = require("../config");
 
 function getSection(categories) {
   if (!categories || categories.length === 0) {
@@ -55,12 +60,48 @@ function getTopicRefId(categories) {
   return SANITY_REF_IDS.NoTopic;
 }
 
-module.exports = function serializePost({ content, ...post }) {
+function getAuthorRefId(excerpt, author) {
+  if (!excerpt || excerpt.length === 0) {
+    return `person-${author}`;
+  }
+
+  const sanitized = removeHTML(excerpt);
+
+  const indexOfBy = sanitized.indexOf("By");
+  const indexOfBar = sanitized.indexOf("|");
+
+  if (indexOfBy === -1 || indexOfBar === -1) {
+    return `person-${author}`;
+  }
+
+  const wordpressAuthorName = sanitized
+    .substring(indexOfBy + 2, indexOfBar - 1)
+    .trim();
+
+  if (!wordpressAuthorName || wordpressAuthorName.length === 0) {
+    return `person-${author}`;
+  }
+
+  const opinyonAuthor = OPINYON_AUTHORS.find(
+    (opinyonAuthor) =>
+      opinyonAuthor.name.toLowerCase() == wordpressAuthorName.toLowerCase()
+  );
+
+  if (!opinyonAuthor) {
+    return `person-${author}`;
+  }
+
+  return opinyonAuthor._id;
+}
+
+module.exports = function serializePost(post) {
   const section = getSection(post.categories);
   const topicRefId = getTopicRefId(post.categories);
   const date = post.date
     ? new Date(post.date).toISOString()
     : new Date().toISOString();
+
+  const authorRefId = getAuthorRefId(post.excerpt.rendered, post.author);
 
   const article = {
     _id: `article-${post.id}`,
@@ -81,18 +122,30 @@ module.exports = function serializePost({ content, ...post }) {
       _ref: topicRefId,
       _weak: false,
     },
-    summary: "",
-    content: content.rendered
-      ? parseBody(content.rendered)
+    summary: capitalizeSection(section) || "News",
+    content: post.content.rendered
+      ? parseBody(post.content.rendered)
       : [{ _type: "block", markDefs: [], children: [] }],
     author: {
       _type: "reference",
-      _ref: `person-${post.author}`,
+      _ref: authorRefId,
       _weak: false,
     },
     publishedAt: date,
     updatedAt: date,
   };
+
+  // console.log({
+  //   title: article.title,
+  //   section: article.section,
+  //   topic: article.topic,
+  //   author: article.author,
+  //   summary: article.summary,
+  // });
+
+  // console.log(
+  //   "================================================================"
+  // );
 
   return article;
 };

@@ -37,10 +37,3 @@ module.exports = (html) =>
       "video",
     ],
   });
-
-exports.removeHtml = (html) =>
-  sanitizeHTML(html, {
-    allowedTags: [],
-    allowedAttributes: {},
-    disallowedTagsMode: "discard",
-  });
