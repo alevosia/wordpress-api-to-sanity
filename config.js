@@ -114,6 +114,15 @@ exports.OPINYON_AUTHORS = [
     _id: "bbb9f8aa-6ce0-4cd6-b9d5-678d6e8e704b",
     name: "Luchie Arguelles",
   },
+  // Legacy Wordpress
+  {
+    _id: "bbb9f8aa-6ce0-4cd6-b9d5-678d6e8e704b",
+    name: "Luchie Aclan Arguelles",
+  },
+  {
+    _id: "bbb9f8aa-6ce0-4cd6-b9d5-678d6e8e704b",
+    name: "Luchie Arguelles",
+  },
   {
     _id: "2f85b973-c0af-43a2-b4ed-440ee59b7d6d",
     name: "Boy Villasanta",
