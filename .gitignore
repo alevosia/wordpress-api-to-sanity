@@ -1,5 +1,5 @@
 .DS_Store
-output.ndjson
+*.ndjson
 
 # Logs
 logs
