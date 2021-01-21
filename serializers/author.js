@@ -1,19 +1,27 @@
-const parseBody = require("../utils/parse-body");
 const sanitizeHtml = require("../utils/sanitize-html");
+const { SANITY_REF_IDS } = require("../config");
 
 module.exports = function serializeAuthor(author) {
-  return {
-    _id: `author-${author.id}`,
-    _type: "author",
-    title: author.name || "",
+  const person = {
+    _id: `person-${author.id}`,
+    _type: "person",
+    avatar: {
+      _type: "reference",
+      _ref: SANITY_REF_IDS.DefaultAvatarImage,
+      _weak: false,
+    },
+    name: author.name || "Opinyon",
     slug: {
       _type: "slug",
       current: author.slug,
     },
-    photo: {
-      _type: "image",
-      _sanityAsset: `image@${author.avatar_urls["96"]}`,
+    role: {
+      _type: "reference",
+      _ref: SANITY_REF_IDS.DefaultRole,
+      _weak: false,
     },
-    description: sanitizeHtml(author.description),
+    biography: sanitizeHtml(author.description) || "Biography",
   };
+
+  return person;
 };
